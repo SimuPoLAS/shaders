@@ -5,21 +5,59 @@ precision mediump float;
 uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
+uniform sampler2D backbuffer;
 
-// define colors for live and dead cells
 vec4 live = vec4(1.0);
 vec4 dead = vec4(0.0);
 
 void main() {
-    // calculate position
-    vec2 pos = gl_FragCoord.xy / u_resolution.xy;
-    // calculate aspect ratio
-    vec2 ar = u_resolution / min(u_resolution.x, u_resolution.y);
+    vec2 pos = (gl_FragCoord.xy / u_resolution.xy);
+    pos = gl_FragCoord.xy;
 
-    // initial color is DED
+    // define starting color
     vec4 color = dead;
 
-    float dist = distance(u_mouse, pos);
+    float sum = 0.0;
+    // check neighbours
+    // 6-7-8
+    // 4-x-5
+    // 1-2-3
+    sum += texture2D(backbuffer, pos + vec2(-1.0, -1.0)).r;
+    sum += texture2D(backbuffer, pos + vec2(-1.0, 0.0)).r;
+    sum += texture2D(backbuffer, pos + vec2(-1.0, 1.0)).r;
+    sum += texture2D(backbuffer, pos + vec2(1.0, -1.0)).r;
+    sum += texture2D(backbuffer, pos + vec2(1.0, 0.0)).r;
+    sum += texture2D(backbuffer, pos + vec2(1.0, 1.0)).r;
+    sum += texture2D(backbuffer, pos + vec2(0.0, -1.0)).r;
+    sum += texture2D(backbuffer, pos + vec2(0.0, 1.0)).r;
 
-    gl_FragColor = color + dist;
+    // get the currently targeted pixel, the "x" in our small diagram
+    vec4 self = texture2D(backbuffer, pos);
+    // if self was not alive previously
+    if (self.r < 0.1) {
+        // resurrection
+        if (sum > 0.9 && sum < 1.1) {
+            color = live;
+        }
+    } else {
+        // death by solitude
+        if (sum < 1.1) {
+            color = dead;
+        // death by overpopulation
+        } else if (sum > 3.9) {
+            color = dead;
+        // two or three neighbours, live!
+        } else {
+            color = live;
+        }
+    }
+
+    // distance determines wether our current pixel is affected by mouse_pos
+    float dist = distance(gl_FragCoord.xy, u_mouse.xy);
+    // if current pixel is directly under the cursor
+    if (dist <= 4.0) {
+        color = live;
+    }
+
+    gl_FragColor = color;
 }
