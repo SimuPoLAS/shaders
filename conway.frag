@@ -60,7 +60,7 @@ void main() {
     // distance determines wether our current pixel is affected by mouse_pos
     float dist = distance(gl_FragCoord.xy, u_mouse.xy);
     // if current pixel is directly under the cursor
-    if (dist <= 15.0 && dist >= 10.0) {
+    if (dist <= 16.0 && dist >= 12.0) {
         color = live;
     }
 
