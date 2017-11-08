@@ -13,8 +13,13 @@ vec3 getcolor(float i) {
 }
 
 void main() {
-	vec2 uv = gl_FragCoord.xy / u_resolution.xy;
-	vec2 c = (uv - vec2(0.5)) * 5.0 + ((u_mouse-u_resolution) / (u_resolution*0.5));
+	float side = min(u_resolution.x, u_resolution.y);
+	float zoom = (3.0 * sin(u_time / 10.0) * sin(u_time / 10.0) + 0.001);
+	vec2 ratio = side / u_resolution.xy - vec2(1.0, 1.0);
+	vec2 p = vec2(1.5, 0.0) * zoom;
+
+	vec2 uv = gl_FragCoord.xy / side;
+	vec2 c = (uv - vec2(0.5) + ratio) * zoom - p;
 	vec3 color = vec3(0.0);
 
 	vec2 z = vec2(0.0);
