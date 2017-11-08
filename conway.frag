@@ -5,7 +5,7 @@ precision mediump float;
 uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
-uniform sampler2D backbuffer;
+uniform sampler2D u_backbuffer;
 
 vec4 live = vec4(1.0);
 vec4 dead = vec4(0.0);
@@ -22,17 +22,17 @@ void main() {
     // 6-7-8
     // 4-x-5
     // 1-2-3
-    sum += texture2D(backbuffer, pos + vec2(-1.0, -1.0) * pixelsize).r;
-    sum += texture2D(backbuffer, pos + vec2(-1.0, 0.0) * pixelsize).r;
-    sum += texture2D(backbuffer, pos + vec2(-1.0, 1.0) * pixelsize).r;
-    sum += texture2D(backbuffer, pos + vec2(1.0, -1.0) * pixelsize).r;
-    sum += texture2D(backbuffer, pos + vec2(1.0, 0.0) * pixelsize).r;
-    sum += texture2D(backbuffer, pos + vec2(1.0, 1.0) * pixelsize).r;
-    sum += texture2D(backbuffer, pos + vec2(0.0, -1.0) * pixelsize).r;
-    sum += texture2D(backbuffer, pos + vec2(0.0, 1.0) * pixelsize).r;
+    sum += texture2D(u_backbuffer, pos + vec2(-1.0, -1.0) * pixelsize).r;
+    sum += texture2D(u_backbuffer, pos + vec2(-1.0, 0.0) * pixelsize).r;
+    sum += texture2D(u_backbuffer, pos + vec2(-1.0, 1.0) * pixelsize).r;
+    sum += texture2D(u_backbuffer, pos + vec2(1.0, -1.0) * pixelsize).r;
+    sum += texture2D(u_backbuffer, pos + vec2(1.0, 0.0) * pixelsize).r;
+    sum += texture2D(u_backbuffer, pos + vec2(1.0, 1.0) * pixelsize).r;
+    sum += texture2D(u_backbuffer, pos + vec2(0.0, -1.0) * pixelsize).r;
+    sum += texture2D(u_backbuffer, pos + vec2(0.0, 1.0) * pixelsize).r;
 
     // get the currently targeted pixel, the "x" in our small diagram
-    vec4 self = texture2D(backbuffer, pos);
+    vec4 self = texture2D(u_backbuffer, pos);
     // if self was not alive previously
     if (self.r < 0.1) {
         // resurrection
@@ -55,9 +55,9 @@ void main() {
     // distance determines wether our current pixel is affected by mouse_pos
     float dist = distance(gl_FragCoord.xy, u_mouse.xy);
     // if current pixel is directly under the cursor
-    if (dist <= 4.0) {
+    if (dist <= 8.0) {
         color = live;
     }
 
-    gl_FragColor = color;
+    gl_FragColor = vec4(color.rgb, 1.0);
 }
