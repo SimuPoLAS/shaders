@@ -29,8 +29,8 @@ void main() {
 
 	//float e = mod(uv.x*uv.x, 1.0) + mod(uv.y*uv.y, 1.0); 
 	float e = ruv.x*ruv.x + ruv.y*ruv.y;
-	if (e < 0.01 + sin(u_time) * sin(u_time) * 0.05)
-		color = vec3(1.0);
+	if (e < 0.01 + sin(u_time) * sin(u_time) * 0.35)
+		color = vec3(sin(u_time), cos(u_time), 1.0);
 
 	gl_FragColor = vec4(color, 1.0);
 }
