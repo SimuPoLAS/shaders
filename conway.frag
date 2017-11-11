@@ -11,7 +11,8 @@ vec3 dead = vec3(0.0);
 
 void main() {
     vec2 pos = (gl_FragCoord.xy / u_resolution.xy);
-    vec2 pixelsize = 1.0 / u_resolution.xy;
+    float px = 5.0;
+    vec2 pixelsize = px / u_resolution.xy;
 
     // define starting color
     vec3 color = dead;
@@ -19,6 +20,18 @@ void main() {
     float x = u_time / 2.0;
     // according to a trigonometric identity, sin2(x) + cos2(x) = 1 is given at all times
     vec3 live = vec3((sin(x) * sin(x)), 0.2, (cos(x) * cos(x)));
+
+    // get the currently targeted pixel, the "x" in our small diagram
+    vec4 self = texture2D(u_backbuffer, pos);
+    // if self was not alive previously
+
+    vec2 split = mod(floor(gl_FragCoord.xy), px);
+
+    // if current pixel is 1 pixel away from the next block starting point...
+    // else if current pixel is 2 pixel away from the next starting point...
+
+    pos.x = (gl_FragCoord.x - (floor(split.x))) / u_resolution.x;
+    pos.y = (gl_FragCoord.y - (floor(split.y))) / u_resolution.y;
 
     vec2 rb_sum = vec2(0.0);
     // check neighbours
@@ -36,9 +49,6 @@ void main() {
     // calculate sum, taking all the R and B values
     float sum = (rb_sum.x + rb_sum.y);
 
-    // get the currently targeted pixel, the "x" in our small diagram
-    vec4 self = texture2D(u_backbuffer, pos);
-    // if self was not alive previously
     if ((self.r + self.b) < 0.1) {
         // resurrection
         if (sum > 2.9 && sum < 3.1) {
